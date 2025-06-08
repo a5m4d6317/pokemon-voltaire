@@ -1,26 +1,30 @@
 import tkinter as tk
 
-# Crée la fenêtre principale
+# Créer la fenêtre
 fenetre = tk.Tk()
-fenetre.title("Compteur de clics")
-fenetre.geometry("300x200")
+fenetre.title("Déplacement avec ZQSD")
 
-# Variable pour compter les clics
-nombre_de_clics = 0
+# Créer le canvas (la zone de dessin)
+canvas = tk.Canvas(fenetre, width=400, height=400, bg="white")
+canvas.pack()
 
-# Fonction qui s'exécute quand on clique sur le bouton
-def cliquer():
-    global nombre_de_clics
-    nombre_de_clics += 1
-    label.config(text=f"Nombre de clics : {nombre_de_clics}")
+# Créer un point (joueur) sous forme de cercle
+joueur = canvas.create_oval(190, 190, 210, 210, fill="blue")
 
-# Label pour afficher le nombre de clics
-label = tk.Label(fenetre, text="Nombre de clics : 0", font=("Arial", 16))
-label.pack(pady=20)
+# Fonction pour déplacer le point
+def deplacer(event):
+    touche = event.keysym
+    if touche == "z":
+        canvas.move(joueur, 0, -10)
+    elif touche == "s":
+        canvas.move(joueur, 0, 10)
+    elif touche == "q":
+        canvas.move(joueur, -10, 0)
+    elif touche == "d":
+        canvas.move(joueur, 10, 0)
 
-# Le bouton qui déclenche le compteur
-bouton = tk.Button(fenetre, text="Clique ici 👆", command=cliquer, font=("Arial", 14))
-bouton.pack(pady=10)
+# Lier les touches au déplacement
+fenetre.bind("<KeyPress>", deplacer)
 
-# Lance l'interface
+# Lancer la boucle du jeu
 fenetre.mainloop()
