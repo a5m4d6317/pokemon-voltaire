@@ -1,39 +1,42 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 
-# Fenêtre principale
-root = tk.Tk()
-root.title("Jeu Pokémon Lucas")
-
-# Canvas pour dessiner
-canvas = tk.Canvas(root, width=500, height=500)
+# --- Fenêtre ---
+fenetre = tk.Tk()
+fenetre.title("Lucas Simulator")
+canvas = tk.Canvas(fenetre, width=300, height=300, bg="white")
 canvas.pack()
 
-# Charger le sprite
-sprite_sheet = Image.open("lucas.png")  # Assure-toi que ce nom est bon
-sprite_sheet = sprite_sheet.resize((144, 192))  # redimensionne proprement si besoin
-sprite_image = ImageTk.PhotoImage(sprite_sheet.crop((0, 0, 32, 32)))  # Premier sprite
+# --- Sprite ---
+sprite_sheet = Image.open("lucas.png")
 
-# Position de départ
-x, y = 250, 250
-sprite = canvas.create_image(x, y, image=sprite_image)
+# Taille d’un sprite (tu peux vérifier en zoomant sur l’image)
+sprite_width = 32
+sprite_height = 32
 
-# Déplacement avec ZQSD
-def move(event):
-    global x, y
-    key = event.keysym
-    if key == 'z':
-        y -= 10
-    elif key == 's':
-        y += 10
-    elif key == 'q':
-        x -= 10
-    elif key == 'd':
-        x += 10
-    canvas.coords(sprite, x, y)
+# Frame du perso vu de face, en position debout
+# (ligne 0 = vers le haut, ligne 1 = droite, ligne 2 = bas, ligne 3 = gauche)
+frame = sprite_sheet.crop((0, 2 * sprite_height, sprite_width, 3 * sprite_height))
+sprite = ImageTk.PhotoImage(frame)
 
-# Bind des touches
-root.bind("<Key>", move)
+# Ajouter le sprite au canvas
+sprite_id = canvas.create_image(150, 150, image=sprite)
 
-# Boucle principale
-root.mainloop()
+# --- Mouvements ---
+def deplacer(dx, dy):
+    canvas.move(sprite_id, dx, dy)
+
+def bouger(event):
+    touches = {
+        "z": (0, -10),
+        "s": (0, 10),
+        "q": (-10, 0),
+        "d": (10, 0),
+    }
+    touche = event.char.lower()
+    if touche in touches:
+        dx, dy = touches[touche]
+        deplacer(dx, dy)
+
+fenetre.bind("<Key>", bouger)
+fenetre.mainloop()
